@@ -1,0 +1,13 @@
+[{
+		"host": "ibmprdib01",
+		"port": 7800
+	},
+	{
+		"host": "ibmtstib01",
+		"port": 7800
+	},
+	{
+		"host": "ibmprdib03",
+		"port": 7800
+	}
+]

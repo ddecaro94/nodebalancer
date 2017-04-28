@@ -1,0 +1,11 @@
+{
+  "name": "nodebalancer",
+  "version": "1.0.0",
+  "description": "Load balancing and reverse proxy app for microservices infrastructure and REST APIs",
+  "main": "nodebalancer.js",
+  "scripts": {
+    "start":"node nodebalancer.js "
+  },
+  "author": "Daniele Decaro",
+  "license": "MIT"
+}
