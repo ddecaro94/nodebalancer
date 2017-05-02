@@ -25,12 +25,12 @@ var balancer = http.createServer(function (req, res) {
 balancer.listen(serverPort)
 .on('error', (e) => {
   if (e.code == 'EADDRINUSE') {
-    console.log('Port',serverPort,'in use, retry with another one');
+    console.log(new Date(),'Port',serverPort,'in use, retry with another one');
   }
     balancer.close();
     return;
 }).on('listening', function(){
-    console.log('nodebalancer listening on port',serverPort,'using configuration file',configFile);
+    console.log(new Date(),'nodebalancer listening on port',serverPort,'using configuration file',configFile);
 });
 
 function nextTarget() {
