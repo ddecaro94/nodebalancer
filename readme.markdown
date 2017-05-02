@@ -8,15 +8,15 @@ Can be run on the same machine on different configurations passing by argument a
 # Install
 With [npm](https://www.npmjs.com/) do:
 
-'''
-npm install -g browserify
-'''
+```
+npm install nodebalancer
+```
 
 # Usage
 A new proxy instance can be run using the command:
-'''
+```
 node nodebalancer.js ./config.json 1234
-'''
+```
 
 A new listener will be opened on port 1234, using the server list read from the file config.json, on the local machine under the application path. If a port number is not provided, port 8000 is used as a default.
 If the file is not a valid JSON or is not present under the path an error will be raised.
@@ -24,7 +24,7 @@ If the file is not a valid JSON or is not present under the path an error will b
 # Configuration file
 
 A configuration file is a JSON file containing in a JSON array a list of JSON objects, each containing hosts and ports to be mirrored, in this form:
-'''
+```
 [{
 		"host": "localhost",
 		"port": 7800
@@ -38,7 +38,8 @@ A configuration file is a JSON file containing in a JSON array a list of JSON ob
 		"port": 1234
 	}
 ]
-'''
+```
+
 # Behavior
 
 Assuming that each proxied host contains the same resources, invoking an HTTP verb on the machine running nodebalancer results in a round-robin load balancing of the requests. In case an error occurs, for example because the invoked resource does not exist on the host, or the socket connection cannot be established because of a downtime due to failure or mantainance, the request in redirected to the next host in the list.
