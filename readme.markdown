@@ -46,3 +46,5 @@ A configuration file is a JSON file containing in a JSON array a list of JSON ob
 Assuming that each proxied host contains the same resources, invoking an HTTP verb on the machine running nodebalancer results in a round-robin load balancing of the requests. In case an error occurs, for example because the invoked resource does not exist on the host, or the socket connection cannot be established because of a downtime due to failure or mantainance, the request in redirected to the next host in the list.
 
 It is supposed that the requests are completely stateless, hence sessionization should be provided server-side, having knowledge of the high availability tool used on top of the stack.
+
+Running the module different times, using different configuration files and/or different ports is useful in order to have a reverse proxy for each resource that should be kept in high availability. 
