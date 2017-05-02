@@ -15,7 +15,7 @@
     "tools"
   ],
   "bin": {
-    "forever": "./bin/forever"
+    "nodebalancer": "./bin/nodebalancer"
   },
   "scripts": {
     "start":"node nodebalancer.js "
