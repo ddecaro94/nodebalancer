@@ -1,4 +1,5 @@
-# nodebalancer
+nodebalancer
+============
 
 **A simple node.js load balancer and reverse proxy to be used in a RESTful or mirrored/distributed microservices architecture.**
 
