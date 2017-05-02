@@ -1,6 +1,6 @@
 {
   "name": "nodebalancer",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Load balancing and reverse proxy app for microservices infrastructure and REST APIs",
   "main": "nodebalancer.js",
   "repository": {
