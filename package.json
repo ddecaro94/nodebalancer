@@ -1,11 +1,28 @@
 {
   "name": "nodebalancer",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "Load balancing and reverse proxy app for microservices infrastructure and REST APIs",
   "main": "nodebalancer.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ddecaro94/nodebalancer.git"
+  },
+  "keywords": [
+    "load balancer",
+    "high availability",
+    "fault tolerant",
+    "sysadmin",
+    "tools"
+  ],
+  "bin": {
+    "forever": "./bin/forever"
+  },
   "scripts": {
     "start":"node nodebalancer.js "
   },
-  "author": "Daniele Decaro",
+  "engines": {
+    "node": ">= 0.8.x"
+  },
+  "author": "Daniele Decaro <danieledecaro113@gmail.com>",
   "license": "MIT"
 }
