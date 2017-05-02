@@ -57,7 +57,7 @@ function sendRequest(serverRequest, serverResponse) {
         });
 
         response.on('end', function (res) {
-            if (response.statusCode >= 400) {
+            if (response.statusCode >= 400 && response.statusCode < 500) {
                 console.log(new Date(), 'Error: code', response.statusCode, response.statusMessage);
                 sendRequest(serverRequest, serverResponse);
             } else {
