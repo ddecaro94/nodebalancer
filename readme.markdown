@@ -56,4 +56,5 @@ If you want to contribute or if you spot a bug (or just have questions) please f
 # Changelog
 
 v0.1.6 02/05/17 - first stable release including descriptions
+
 v0.2.1 03/05/17 - added TTL to avoid endless loops
