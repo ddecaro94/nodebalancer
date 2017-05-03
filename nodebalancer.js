@@ -17,7 +17,7 @@ var balancer = http.createServer(function (req, res) {
     if (req.url === '/favicon.ico') {
         //console.log('Favicon requested');
     } else {
-        sendRequest(req, res);
+        sendRequest(req, res, addresses.length-1);
     }
     
 });
@@ -49,7 +49,8 @@ function getOptions(req) {
     return options;
 }
 
-function sendRequest(serverRequest, serverResponse) {
+function sendRequest(serverRequest, serverResponse, ttl) {
+    
     var request = http.request(getOptions(serverRequest), function (response) {
         var str = ''
         response.on('data', function (chunk) {
@@ -57,9 +58,10 @@ function sendRequest(serverRequest, serverResponse) {
         });
 
         response.on('end', function (res) {
-            if (response.statusCode >= 400 && response.statusCode < 500) {
+            console.log( new Date(),"Request sent to", request._headers.host);
+            if (response.statusCode >= 400 && response.statusCode < 500 && ttl>0) {
                 console.log(new Date(), 'Error: code', response.statusCode, response.statusMessage);
-                sendRequest(serverRequest, serverResponse);
+                sendRequest(serverRequest, serverResponse, ttl-1);
             } else {
                 var headers = response.headers;
                 serverResponse.writeHead(response.statusCode, response.statusMessage, headers);
@@ -76,10 +78,11 @@ function sendRequest(serverRequest, serverResponse) {
         //  - HPE_INVALID_VERSION
         //  - HPE_INVALID_STATUS
         //  - ... (other HPE_* codes) - server returned garbage
+        console.log( new Date(),"Request sent to", request._headers.host);
         console.log(new Date(), 'Error:', e.message);
-        
-        sendRequest(serverRequest, serverResponse);
+        if (ttl>0){
+            sendRequest(serverRequest, serverResponse,ttl-1);
+        }
     });
-    console.log( new Date(),"Sending request to", request._headers.host);
     request.end();
 }
