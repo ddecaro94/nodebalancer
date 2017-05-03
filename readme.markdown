@@ -47,4 +47,13 @@ Assuming that each proxied host contains the same resources, invoking an HTTP ve
 
 It is supposed that the requests are completely stateless, hence sessionization should be provided server-side, having knowledge of the high availability tool used on top of the stack.
 
-Running the module different times, using different configuration files and/or different ports is useful in order to have a reverse proxy for each resource that should be kept in high availability. 
+Running the module different times, using different configuration files and/or different ports is useful in order to have a reverse proxy for each resource that should be kept in high availability.
+
+# Contribution
+
+If you want to contribute or if you spot a bug (or just have questions) please feel free to open an issue or email me at danieledecaro113ATgmail.com
+
+# Changelog
+
+v0.1.6 02/05/17 - first stable release including descriptions
+v0.2.1 03/05/17 - added TTL to avoid endless loops
