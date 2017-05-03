@@ -51,7 +51,7 @@ Running the module different times, using different configuration files and/or d
 
 # Contribution
 
-If you want to contribute or if you spot a bug (or just have questions) please feel free to open an issue or email me at danieledecaro113ATgmail.com
+If you want to contribute or if you spot a bug (or just have questions) please feel free to open an issue on github or email me at [mailto:danieledecaro113@gmail.com]
 
 # Changelog
 
