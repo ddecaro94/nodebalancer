@@ -60,3 +60,5 @@ v0.1.6 02/05/17 - first stable release including descriptions
 v0.2.1 03/05/17 - added TTL to avoid endless loops
 
 v0.2.3 08/05/17 - added config file error handling
+
+v0.2.3 08/05/17 - added executable in package.json

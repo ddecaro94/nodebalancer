@@ -1,8 +1,11 @@
 {
   "name": "nodebalancer",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Load balancing and reverse proxy app for microservices infrastructure and REST APIs",
   "main": "nodebalancer.js",
+  "bin": {
+    "nodebalancer": "./nodebalancer.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ddecaro94/nodebalancer.git"
@@ -15,7 +18,7 @@
     "tools"
   ],
   "scripts": {
-    "start":"node nodebalancer.js "
+    "start": "node nodebalancer.js "
   },
   "engines": {
     "node": ">= 0.8.x"
