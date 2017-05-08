@@ -10,7 +10,7 @@ Can be run on the same machine on different configurations passing by argument a
 With [npm](https://www.npmjs.com/) do:
 
 ```
-npm install nodebalancer
+npm install nodebalancer -g
 ```
 
 # Usage
@@ -58,3 +58,5 @@ If you want to contribute or if you spot a bug (or just have questions) please f
 v0.1.6 02/05/17 - first stable release including descriptions
 
 v0.2.1 03/05/17 - added TTL to avoid endless loops
+
+v0.2.3 08/05/17 - added config file error handling
