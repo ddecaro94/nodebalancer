@@ -2,7 +2,7 @@ var http = require('http');
 var args = process.argv.slice(2); //accept as argument the file name and the port number to listen on
 
 if (args[0] == undefined || args[0] == null) {
-    console.log(new Date() +' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber]');
+    console.log(new Date() + ' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber]');
     return;
 }
 
@@ -12,7 +12,7 @@ var serverPort = 8000; //default port number
 try {
     var addresses = require(configFile); //load and parse configuration file
 } catch (err) {
-    console.log(new Date() +' Cannot load configuration file ' + configFile);
+    console.log(new Date() + ' Cannot load configuration file ' + configFile);
     return;
 }
 
@@ -32,7 +32,7 @@ var balancer = http.createServer(function (req, res) {
 balancer.listen(serverPort)
     .on('error', (e) => {
         if (e.code == 'EADDRINUSE') { //wrong port - already used
-            console.log(new Date() +' Port ' + serverPort + ' in use, retry with another one');
+            console.log(new Date() + ' Port ' + serverPort + ' in use, retry with another one');
         }
         balancer.close();
         return;
