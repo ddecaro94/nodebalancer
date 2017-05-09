@@ -63,13 +63,13 @@ function sendRequest(serverRequest, serverResponse, ttl) {
     //perform a request to the next endpoint
     var request = http.request(getOptions(serverRequest), function (response) {
         //collect response data
-        var str = ''
+        var data = [];
         response.on('data', function (chunk) {
-            str += chunk;
+            data.push(chunk);
         });
         //on response end check the code: if client error perform request again
         response.on('end', function (res) {
-            console.log(new Date() + ' Request sent to ' + request._headers.host);
+            console.log(new Date() + ' Request sent to ' + request._headers.host+request.path);
             if (response.statusCode >= 400 && response.statusCode < 500 && ttl > 0) {
                 console.log(new Date() + ' Error: code ' + response.statusCode + ' ' + response.statusMessage);
                 sendRequest(serverRequest, serverResponse, ttl - 1);
@@ -78,7 +78,9 @@ function sendRequest(serverRequest, serverResponse, ttl) {
                 //else send back the response
                 var headers = response.headers;
                 serverResponse.writeHead(response.statusCode, response.statusMessage, headers);
-                serverResponse.write(str);
+                //this way data is always written in binary
+                var binary = Buffer.concat(data);
+                serverResponse.write(binary);
                 serverResponse.end();
             }
         });
@@ -91,7 +93,7 @@ function sendRequest(serverRequest, serverResponse, ttl) {
         //  - HPE_INVALID_VERSION
         //  - HPE_INVALID_STATUS
         //  - ... (other HPE_* codes) - server returned garbage
-        console.log(new Date() + ' Request sent to ' + request._headers.host);
+        console.log(new Date() + ' Request sent to ' + request._headers.host+request.path);
         console.log(new Date() + ' Error: ' + e.message);
         if (ttl > 0) {
             //handling errors not from http protocol

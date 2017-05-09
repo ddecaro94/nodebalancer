@@ -62,3 +62,5 @@ v0.2.1 03/05/17 - added TTL to avoid endless loops
 v0.2.3 08/05/17 - added config file error handling
 
 v0.2.3 08/05/17 - added executable in package.json
+
+v0.2.3 09/05/17 - fixed bug on binary server responses
