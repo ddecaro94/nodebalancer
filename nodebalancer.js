@@ -3,7 +3,7 @@ var args = process.argv.slice(2); //accept as argument the file name and the por
 
 if (args[0] == undefined || args[0] == null) {
     console.log(new Date() + ' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber]');
-    return;
+    process.exit(1);
 }
 
 var configFile = args[0]; //parse the argument
@@ -13,7 +13,7 @@ try {
     var addresses = require(configFile); //load and parse configuration file
 } catch (err) {
     console.log(new Date() + ' Cannot load configuration file ' + configFile);
-    return;
+    process.exit(1);
 }
 
 if (args[1] !== undefined) {
@@ -33,9 +33,11 @@ balancer.listen(serverPort)
     .on('error', (e) => {
         if (e.code == 'EADDRINUSE') { //wrong port - already used
             console.log(new Date() + ' Port ' + serverPort + ' in use, retry with another one');
+        } else {
+            console.log(new Date() + ' Error: ' + e.message);
         }
         balancer.close();
-        return;
+        process.exit(1);
     }).on('listening', function () {
         console.log(new Date() + ' nodebalancer listening on port ' + serverPort + ' using configuration file ' + configFile);
     });
