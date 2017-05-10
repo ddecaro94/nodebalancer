@@ -1,9 +1,5 @@
 [{
-		"host": "ibmprdib01",
-		"port": 7800
-	},
-	{
-		"host": "ibmtstib01",
+		"host": "ibmprdib02",
 		"port": 7800
 	},
 	{
