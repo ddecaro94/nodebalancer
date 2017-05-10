@@ -3,7 +3,7 @@
 		"port": 7800
 	},
 	{
-		"host": "ibmtstib01",
+		"host": "ibmsvlib01",
 		"port": 7800
 	},
 	{

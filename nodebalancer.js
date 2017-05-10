@@ -25,7 +25,19 @@ var balancer = http.createServer(function (req, res) {
     if (req.url === '/favicon.ico') {
         //console.log('Favicon requested');
     } else {
-        sendRequest(req, res, addresses.length - 1); //send request to next endpoint using addresses list length as ttl
+        var data = [];
+        req.on('data', function (chunk) {
+            data.push(chunk);
+            if(data.length > 1e6) {
+                data = "Request Entity Too Large";
+                res.writeHead(413, {'Content-Type': 'text/plain'}).write(data).end();
+                request.connection.destroy();
+            }
+        }).on('end', function () {
+            //
+            var body = new Buffer.concat(data);
+            sendRequest(req, res, body, addresses.length - 1);
+        }); //send request to next endpoint using addresses list length as ttl)
     }
 });
 
@@ -54,14 +66,17 @@ function getOptions(req) {
     //function that returns http request options
     var target = nextTarget();
     var options = {
-        host: target.target.host,
+        headers: req.headers,
+        hostname: target.target.host,
         path: req.url,
-        port: target.target.port
+        port: target.target.port,
+        method: req.method
     };
+    delete (options.headers.host);
     return options;
 }
 
-function sendRequest(serverRequest, serverResponse, ttl) {
+function sendRequest(serverRequest, serverResponse, body, ttl) {
     //perform a request to the next endpoint
     var request = http.request(getOptions(serverRequest), function (response) {
         //collect response data
@@ -71,10 +86,10 @@ function sendRequest(serverRequest, serverResponse, ttl) {
         });
         //on response end check the code: if client error perform request again
         response.on('end', function (res) {
-            console.log(new Date() + ' Request sent to ' + request._headers.host+request.path);
+            console.log(new Date() + ' Request sent to ' + request._headers.host + request.path);
             if (response.statusCode >= 400 && response.statusCode < 500 && ttl > 0) {
                 console.log(new Date() + ' Error: code ' + response.statusCode + ' ' + response.statusMessage);
-                sendRequest(serverRequest, serverResponse, ttl - 1);
+                sendRequest(serverRequest, serverResponse, body, ttl - 1);
                 return;
             } else {
                 //else send back the response
@@ -95,13 +110,15 @@ function sendRequest(serverRequest, serverResponse, ttl) {
         //  - HPE_INVALID_VERSION
         //  - HPE_INVALID_STATUS
         //  - ... (other HPE_* codes) - server returned garbage
-        console.log(new Date() + ' Request sent to ' + request._headers.host+request.path);
+        console.log(new Date() + ' Request sent to ' + request._headers.host + request.path);
         console.log(new Date() + ' Error: ' + e.message);
         if (ttl > 0) {
             //handling errors not from http protocol
-            sendRequest(serverRequest, serverResponse, ttl - 1);
+            sendRequest(serverRequest, serverResponse, body, ttl - 1);
             return;
         }
     });
+
+    request.write(body);
     request.end();
 }
