@@ -66,3 +66,5 @@ v0.2.3 08/05/17 - added executable in package.json
 v0.2.5 09/05/17 - fixed bug on binary server responses
 
 v0.2.6 09/05/17 - improved error handling on startup
+
+v0.3.0 10/05/17 - added support for HTTP request body, fixed method issues
