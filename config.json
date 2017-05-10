@@ -1,9 +1,13 @@
 [{
+<<<<<<< HEAD
 		"host": "ibmprdib01",
 		"port": 7800
 	},
 	{
 		"host": "ibmsvlib01",
+=======
+		"host": "ibmprdib02",
+>>>>>>> 9db4b35a023ad6bd27213b7b0440c0ae9cc9fa15
 		"port": 7800
 	},
 	{
