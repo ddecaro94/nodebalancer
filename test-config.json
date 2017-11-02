@@ -1,0 +1,10 @@
+[
+	{
+		"host": "http://www.corriere.it/",
+		"port": 80
+	},
+	{
+		"host": "http://www.libero.it/",
+		"port": 80
+	}
+]
