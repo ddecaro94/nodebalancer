@@ -18,7 +18,7 @@
     "tools"
   ],
   "scripts": {
-    "start": "node nodebalancer.js "
+    "start": "node nodebalancer.js ./test-config.json 18000"
   },
   "engines": {
     "node": ">= 0.8.x"
