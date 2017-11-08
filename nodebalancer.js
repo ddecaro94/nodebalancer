@@ -1,84 +1,118 @@
-var http = require('http');
-var args = process.argv.slice(2); //accept as argument the file name and the port number to listen on
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const args = process.argv.slice(2); //accept as argument the file name and the port number to listen on
 
 if (args[0] == undefined || args[0] == null) {
-    console.log(new Date() + ' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber]');
+    console.log(new Date() + ' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber] [*-s /path/to/key /path/to/crt]');
     process.exit(1);
 }
-
-var configFile = args[0]; //parse the argument
-var serverPort = 8000; //default port number
+var config = {
+    file: args[0], //parse the argument
+    serverPort: 8000, //default port number
+    secure: false,
+    options: undefined
+}
 
 try {
-    var addresses = require(configFile); //load and parse configuration file
+    var addresses = require(config.file); //load and parse configuration file
 } catch (err) {
-    console.log(new Date() + ' Cannot load configuration file ' + configFile);
+    console.log(new Date() + ' Cannot load configuration file ' + config.file);
     process.exit(1);
 }
 
 if (args[1] !== undefined) {
-    serverPort = args[1]; //parse port
+    config.serverPort = args[1]; //parse port
 }
 
-
-var balancer = http.createServer(function (req, res) {
-    if (req.url === '/favicon.ico') {
-        //console.log('Favicon requested');
-    } else {
-        var data = [];
-        req.on('data', function (chunk) {
-            data.push(chunk);
-            if(data.length > 1e6) {
-                data = "Request Entity Too Large";
-                res.writeHead(413, {'Content-Type': 'text/plain'}).write(data).end();
-                request.connection.destroy();
+for(var i = 2; i < args.length; i++) {
+    switch (args[i]) {
+        case '-s':
+            config.secure = true;
+            config.options = {
+                key: "key.pem",
+                cert: "cert.pem"
             }
-        }).on('end', function () {
-            //
-            var body = new Buffer.concat(data);
-            sendRequest(req, res, body, addresses.length - 1);
-        }); //send request to next endpoint using addresses list length as ttl)
+            break;
+        case '-k':
+            config.options.key = args[(i++)+1];
+            break;
+        case '-c':
+            config.options.cert = args[(i++)+1];
+            break;
+        default:
+            break;
     }
-});
+}
 
-balancer.listen(serverPort)
+if (config.secure) {
+    config.options.key = fs.readFileSync(config.options.key);
+    config.options.cert = fs.readFileSync(config.options.cert);
+}
+
+var balancer = (config.secure) ? https.createServer(config.options, reqListener) : http.createServer(reqListener);
+
+function reqListener(req, res) {
+    var data = [];
+    var size = 0;
+    req.on('data', function (chunk) {
+        data.push(chunk);
+        size += chunk.length;
+        if(size > 1e9) {
+            //pow(10, 9) ~ 1000 MB request, definitely too big
+            req.pause();
+            res.writeHead(413, {'Content-Type': 'text/plain'});
+            res.end();
+        }
+    }).on('end', function () {
+        //
+        var body = new Buffer.concat(data);
+        sendRequest(req, res, body, addresses.length - 1);
+    }).on('error', function (e) {
+        req.connection.destroy();
+    }); //send request to next endpoint using addresses list length as ttl)
+}
+
+balancer.listen(config.serverPort)
     .on('error', (e) => {
         if (e.code == 'EADDRINUSE') { //wrong port - already used
-            console.log(new Date() + ' Port ' + serverPort + ' in use, retry with another one');
+            console.log(new Date() + ' Port ' + config.serverPort + ' in use, retry with another one');
         } else {
             console.log(new Date() + ' Error: ' + e.message);
         }
         balancer.close();
-        process.exit(1);
+        process.exit(2);
     }).on('listening', function () {
-        console.log(new Date() + ' nodebalancer listening on port ' + serverPort + ' using configuration file ' + configFile);
+        console.log(new Date() + ' nodebalancer listening using', (config.secure)? 'https':'http', 'on port ' + config.serverPort + ' using configuration file ' + config.file);
     });
 
 function nextTarget() {
     //function returning the next address to be called
     //change this function to implement algorithms different than round robin
-    var target = { target: addresses.shift() }; //first address is fetched
-    addresses.push(target.target); //and inserted at the bottom of the array
+    var target = addresses.shift(); //first address is fetched
+    addresses.push(target); //and inserted at the bottom of the array
     return target;
 }
 
-function getOptions(req) {
+function getProperties(req) {
     //function that returns http request options
     var target = nextTarget();
     var options = {
         headers: req.headers,
-        hostname: target.target.host,
+        hostname: target.host,
         path: req.url,
-        port: target.target.port,
+        port: target.port,
         method: req.method
     };
     delete (options.headers.host);
-    return options;
+    return {target, options};
 }
 
 function sendRequest(serverRequest, serverResponse, body, ttl) {
     //perform a request to the next endpoint
-    var request = http.request(getOptions(serverRequest), function (response) {
+    var properties = getProperties(serverRequest);
+    var protocol = (properties.target.protocol == 'https') ? https : http;
+    var request = protocol.request(properties.options, function (response) {
         //collect response data
         var data = [];
         response.on('data', function (chunk) {
@@ -96,8 +130,7 @@ function sendRequest(serverRequest, serverResponse, body, ttl) {
                 var headers = response.headers;
                 serverResponse.writeHead(response.statusCode, response.statusMessage, headers);
                 //this way data is always written in binary
-                var binary = Buffer.concat(data);
-                serverResponse.write(binary);
+                serverResponse.write(Buffer.concat(data));
                 serverResponse.end();
             }
         });
@@ -116,9 +149,10 @@ function sendRequest(serverRequest, serverResponse, body, ttl) {
             //handling errors not from http protocol
             sendRequest(serverRequest, serverResponse, body, ttl - 1);
             return;
+        } else {
+            serverRequest.emit('error', e);
         }
     });
-
     request.write(body);
     request.end();
 }

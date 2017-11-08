@@ -1,10 +1,12 @@
 [
 	{
-		"host": "ibmprdib02",
-		"port": 7800
+		"host": "localhost",
+		"port": 7800,
+		"protocol" : "http"
 	},
 	{
-		"host": "ibmprdib03",
-		"port": 7800
+		"host": "localhost",
+		"port": 7043,
+		"protocol" : "https"
 	}
 ]

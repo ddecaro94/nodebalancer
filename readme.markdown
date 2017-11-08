@@ -22,24 +22,33 @@ node nodebalancer.js ./config.json 1234
 A new listener will be opened on port 1234, using the server list read from the file config.json, on the local machine under the application path. If a port number is not provided, port 8000 is used as a default.
 If the file is not a valid JSON or is not present under the path an error will be raised.
 
+To start the proxy using https it is possible to use the flag `-s`; in this case, the path to the server key can be specified using the flag `-k`, and the one to the server certificate using the flag `-c`; An example:
+```
+node nodebalancer.js ./config.json 1234 -s -k /etc/ssl/key.pem -c /est/ssl/cert.pem
+```
+Key and certificate default to `key.pem` and `cert.pem` under the process working root.
+
 # Configuration file
 
-A configuration file is a JSON file containing in a JSON array a list of JSON objects, each containing hosts and ports to be mirrored, in this form:
+A configuration file is a JSON file containing in a JSON array a list of JSON objects, each containing hosts and ports to be mirrored. It is possible to explicit the protocol to be used for the request, could be `http` or `https` (defaults to http), in this form:
 ```
-[{
+[   {
 		"host": "localhost",
 		"port": 7800
 	},
 	{
 		"host": "testserver1",
-		"port": 4444
+		"port": 4444,
+		"protocol" : "https"
 	},
 	{
 		"host": "abc.test.com",
-		"port": 1234
+		"port": 1234,
+		"protocol" : "http"
 	}
 ]
 ```
+
 
 # Behavior
 
@@ -54,6 +63,7 @@ Running the module different times, using different configuration files and/or d
 If you want to contribute or if you spot a bug (or just have questions) please feel free to open an issue on github or email me at danieledecaro113@gmail.com
 
 # Changelog
+v0.9.0 08/11/17 - added https support, improved error handling
 
 v0.1.6 02/05/17 - first stable release including descriptions
 
