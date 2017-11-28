@@ -121,7 +121,7 @@ function sendRequest(serverRequest, serverResponse, body, ttl) {
         //on response end check the code: if client error perform request again
         response.on('end', function (res) {
             console.log(new Date() + ' Request sent to ' + request._headers.host + request.path);
-            if (response.statusCode >= 400 && response.statusCode < 500 && ttl > 0) {
+            if (response.statusCode >= 404 && ttl > 0) {
                 console.log(new Date() + ' Error: code ' + response.statusCode + ' ' + response.statusMessage);
                 sendRequest(serverRequest, serverResponse, body, ttl - 1);
                 return;
