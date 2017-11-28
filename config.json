@@ -1,12 +1,12 @@
 [
 	{
-		"host": "localhost",
-		"port": 7800,
+		"host": "www.corriere.it",
+		"port": 80,
 		"protocol" : "http"
 	},
 	{
-		"host": "localhost",
-		"port": 7043,
-		"protocol" : "https"
+		"host": "www.repubblica.it/ciao",
+		"port": 80,
+		"protocol" : "http"
 	}
 ]
