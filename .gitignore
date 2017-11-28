@@ -6,3 +6,4 @@ npm-debug.log
 *.pem
 https-test-config.json
 nodebalancer-api.js
+config.json
