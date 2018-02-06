@@ -24,5 +24,8 @@
     "node": ">= 0.8.x"
   },
   "author": "Daniele Decaro <danieledecaro113@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "shortid": "^2.2.8"
+  }
 }

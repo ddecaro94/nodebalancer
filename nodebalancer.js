@@ -2,6 +2,7 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const args = process.argv.slice(2); //accept as argument the file name and the port number to listen on
+var shortid = require('shortid');
 
 if (args[0] == undefined || args[0] == null) {
     console.log(new Date() + ' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber] [*-s /path/to/key /path/to/crt]');
@@ -67,7 +68,7 @@ function reqListener(req, res) {
     }).on('end', function () {
         //
         var body = new Buffer.concat(data);
-        sendRequest(req, res, body, addresses.length - 1);
+        sendRequest(shortid.generate(), req, res, body, addresses.length - 1);
     }).on('error', function (e) {
         req.connection.destroy();
     }); //send request to next endpoint using addresses list length as ttl)
@@ -108,7 +109,7 @@ function getProperties(req) {
     return {target, options};
 }
 
-function sendRequest(serverRequest, serverResponse, body, ttl) {
+function sendRequest(reqid, serverRequest, serverResponse, body, ttl) {
     //perform a request to the next endpoint
     var properties = getProperties(serverRequest);
     var protocol = (properties.target.protocol == 'https') ? https : http;
@@ -120,10 +121,11 @@ function sendRequest(serverRequest, serverResponse, body, ttl) {
         });
         //on response end check the code: if client error perform request again
         response.on('end', function (res) {
-            console.log(new Date() + ' Request sent to ' + request._headers.host + request.path);
+            console.log(new Date() + ' -- ' + serverRequest.connection.remoteAddress +' -- ' + reqid + ' -- Request sent to ' + request._headers.host + request.path);
             if (response.statusCode >= 404 && ttl > 0) {
-                console.log(new Date() + ' Error: code ' + response.statusCode + ' ' + response.statusMessage);
-                sendRequest(serverRequest, serverResponse, body, ttl - 1);
+                console.log(new Date() + ' -- ' + serverRequest.connection.remoteAddress +' -- ' + reqid + ' -- Error requesting ' + request._headers.host + request.path+': code ' + response.statusCode + ' ' + response.statusMessage);
+                
+                sendRequest(reqid, serverRequest, serverResponse, body, ttl - 1);
                 return;
             } else {
                 //else send back the response
@@ -143,11 +145,11 @@ function sendRequest(serverRequest, serverResponse, body, ttl) {
         //  - HPE_INVALID_VERSION
         //  - HPE_INVALID_STATUS
         //  - ... (other HPE_* codes) - server returned garbage
-        console.log(new Date() + ' Request sent to ' + request._headers.host + request.path);
-        console.log(new Date() + ' Error: ' + e.message);
+        console.log(new Date() + ' -- ' + serverRequest.connection.remoteAddress +' -- ' + reqid + ' -- Error requesting ' + request._headers.host + request.path + ': '+e.message);
+       
         if (ttl > 0) {
             //handling errors not from http protocol
-            sendRequest(serverRequest, serverResponse, body, ttl - 1);
+            sendRequest(reqid, serverRequest, serverResponse, body, ttl - 1);
             return;
         } else {
             serverRequest.emit('error', e);
