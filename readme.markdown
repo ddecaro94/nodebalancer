@@ -63,6 +63,8 @@ Running the module different times, using different configuration files and/or d
 If you want to contribute or if you spot a bug (or just have questions) please feel free to open an issue on github or email me at danieledecaro113@gmail.com
 
 # Changelog
+v0.9.1 28/02/18 - log caller address, request id
+
 v0.9.0 08/11/17 - added https support, improved error handling
 
 v0.1.6 02/05/17 - first stable release including descriptions
