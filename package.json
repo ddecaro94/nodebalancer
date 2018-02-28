@@ -25,7 +25,5 @@
   },
   "author": "Daniele Decaro <danieledecaro113@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "shortid": "^2.2.8"
-  }
+  "dependencies": {}
 }

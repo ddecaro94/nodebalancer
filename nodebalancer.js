@@ -2,7 +2,6 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const args = process.argv.slice(2); //accept as argument the file name and the port number to listen on
-var shortid = require('shortid');
 
 if (args[0] == undefined || args[0] == null) {
     console.log(new Date() + ' Usage: nodebalancer.js [/path/to/configuration/file] [*portnumber] [*-s /path/to/key /path/to/crt]');
@@ -68,7 +67,7 @@ function reqListener(req, res) {
     }).on('end', function () {
         //
         var body = new Buffer.concat(data);
-        sendRequest(shortid.generate(), req, res, body, addresses.length - 1);
+        sendRequest(Date.now(), req, res, body, addresses.length - 1);
     }).on('error', function (e) {
         req.connection.destroy();
     }); //send request to next endpoint using addresses list length as ttl)
