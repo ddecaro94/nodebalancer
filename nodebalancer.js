@@ -11,7 +11,7 @@ var config = {
     file: args[0], //parse the argument
     serverPort: 8000, //default port number
     secure: false,
-    options: undefined
+    options: undefined    
 }
 
 try {
@@ -73,6 +73,7 @@ function reqListener(req, res) {
     }); //send request to next endpoint using addresses list length as ttl)
 }
 
+balancer.timeout = 1200000;
 balancer.listen(config.serverPort)
     .on('error', (e) => {
         if (e.code == 'EADDRINUSE') { //wrong port - already used
@@ -121,7 +122,7 @@ function sendRequest(reqid, serverRequest, serverResponse, body, ttl) {
         //on response end check the code: if client error perform request again
         response.on('end', function (res) {
             console.log(new Date() + ' -- ' + serverRequest.connection.remoteAddress +' -- ' + reqid + ' -- Request sent to ' + request._headers.host + request.path);
-            if (response.statusCode >= 404 && ttl > 0) {
+            if (response.statusCode >= 400 && response.statusCode < 500 && ttl > 0) {
                 console.log(new Date() + ' -- ' + serverRequest.connection.remoteAddress +' -- ' + reqid + ' -- Error requesting ' + request._headers.host + request.path+': code ' + response.statusCode + ' ' + response.statusMessage);
                 
                 sendRequest(reqid, serverRequest, serverResponse, body, ttl - 1);
